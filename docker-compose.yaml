@@ -1,0 +1,53 @@
+version: '3.8'
+services:
+  front:
+    build:
+      context: './react-docker'
+      dockerfile: Dockerfile
+    ports:
+      - 3000:3000
+    container_name: react-container
+
+
+    networks:
+      - mern-stack-networks
+    # volumes:
+    #   - ./react-docker:/app
+    # stdin_open: true
+    # tty: true
+
+  backend:
+    build:
+      context: './express-docker'
+      dockerfile: Dockerfile
+    ports:
+      - 5500:5500
+    container_name: express-container
+    networks:
+      - mern-stack-networks
+    # volumes:
+    #   - ./express-docker:/app
+    depends_on:
+      - mongo
+    # environment:
+    #   MONGODB_URL: mongodb://127.0.0.1:27017/newNotion
+
+  mongo:
+    image: mongo
+    ports:
+      - 7000:27017
+    container_name: mongo-container
+    # restart: always
+    networks:
+      - mern-stack-networks
+    volumes:
+      - mongoData:/data/db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=secret
+      - MONGO_INITDB_DATABASE=studynotion
+
+networks:
+  mern-stack-networks:
+volumes:
+  mongoData:
